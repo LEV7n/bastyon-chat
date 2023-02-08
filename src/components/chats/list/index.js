@@ -16,7 +16,7 @@ export default {
 			revealed: {},
 			lastEventDescription: "",
 			blocked: false,
-			eventsLoaded: []
+			eventsLoaded: [],
 			globalsearch : ''
 		};
 	},
