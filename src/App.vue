@@ -616,10 +616,10 @@ export default {
 	},
 
 	created() {
-		//this.pocketnet = false;
-		//this.mobile = !this.pocketnet;
-		//this.recording = true;
-		//this.iscallsenabled = true;
+		// this.pocketnet = false;
+		// this.mobile = !this.pocketnet;
+		// this.recording = true;
+		// this.iscallsenabled = true;
 
 		this.$store.commit("setCallsEnabled", this.iscallsenabled);
 		this.$store.commit("setPocketnet", this.pocketnet);
@@ -835,7 +835,7 @@ export default {
 			privateKey: this.privatekey,
 		};
 
-		var username = Object.keys(testUsers)[5];
+		var username = "nevermore";
 
 		var user =
 			this.address && this.privatekey ? actualUser : testUsers[`${username}`];
@@ -884,7 +884,7 @@ export default {
 			listofproxies: listofproxies,
 
 			servers: {
-				pocketnet: "https://test.pocketnet.app:8888",
+				pocketnet: "https://pocketnet.app:8888",
 			},
 		});
 
