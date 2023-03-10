@@ -628,8 +628,9 @@ class Core {
 	}
 	
 	/**
-	 * TODO: Check is user logged | name exists
+	 * Create room for stream
 	 *
+	 * @param name
 	 * @return {*}
 	 */
 	createStreamRoom(name) {
@@ -661,6 +662,17 @@ class Core {
 			.catch((e) => {
 				return Promise.reject(e);
 			});
+	}
+	
+	/**
+	 * Remove stream room
+	 *
+	 * @param roomId
+	 * @return {*}
+	 */
+	removeStreamRoom(roomId) {
+		return this.mtrx.client
+			.removeRoom(roomId);
 	}
 }
 
