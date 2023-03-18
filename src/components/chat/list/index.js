@@ -67,6 +67,10 @@ export default {
 			//   this.readAll();
 			// }
 		},
+
+		filterType: function (value) {
+			this.init();
+		}
 	},
 	computed: mapState({
 		lloading: function () {
@@ -373,9 +377,17 @@ export default {
 					break;
 				}
 				
-				case "donations": {
+				case "donate": {
 					ts = await this.customTimelineSet('TEXT', (filter) => {
-						// filter.setDefinition({});
+						filter.setDefinition({
+							room: {
+								timeline: {
+									contains_url: false,
+									types: ["m.room.message"],
+									"org.matrix.labels": ["donate"]
+								},
+							},
+						});
 					});
 					break;
 				}
