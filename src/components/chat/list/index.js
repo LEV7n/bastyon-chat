@@ -368,7 +368,6 @@ export default {
 						filter.setDefinition({
 							room: {
 								timeline: {
-									contains_url: false,
 									types: ["m.room.message"],
 								},
 							},
@@ -382,9 +381,8 @@ export default {
 						filter.setDefinition({
 							room: {
 								timeline: {
-									contains_url: false,
-									types: ["m.room.message"],
-									"org.matrix.labels": ["donate"]
+									contains_url: true,
+									types: ["m.room.message"]
 								},
 							},
 						});
