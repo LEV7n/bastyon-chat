@@ -4,7 +4,7 @@
 		:class="{ readyToRender, my }"
 		ref="msgElement"
 		v-if="
-			!event.localRedactionEvent() && !event.getRedactionEvent() && !removed
+			(streamMode && !isBanned) || (!streamMode && !event.localRedactionEvent() && !event.getRedactionEvent() && !removed)
 		"
 	>
 		<member
@@ -71,7 +71,7 @@
 		</div>
 	</div>
 
-	<div v-else class="deletedMessage">
+	<div v-else-if="!streamMode" class="deletedMessage">
 		<i class="fas fa-eraser"></i> {{ $t("caption.messageDeleted") }}
 	</div>
 </template>
@@ -107,10 +107,8 @@
 </style>
 
 <script>
-import dummypreviews from "@/components/chats/dummypreviews";
 import common from "@/components/events/event/common/index.vue";
 import member from "@/components/events/event/member/index.vue";
-import message from "@/components/events/event/message/index.vue";
 
 import f from "@/application/functions";
 
@@ -122,9 +120,11 @@ export default {
 	components: {
 		common,
 		member,
-		message,
-		dummypreviews,
+		message : () => import("@/components/events/event/message/index.vue"),
+		dummypreviews : () => import("@/components/chats/dummypreviews"),
 	},
+
+	inject: ["streamMode", "userBanned"],
 
 	data: function () {
 		return {
@@ -255,6 +255,16 @@ export default {
 		my: function () {
 			return this.userinfo.id === this.core.user.userinfo?.id;
 		},
+
+		isBanned: function() {
+			const
+				id = this.event.event.user_id ?? this.event.event.sender,
+				state = this.chat.currentState?.members[id]?.membership === "ban";
+
+			if (this.my) this.userBanned.set(state);
+
+			return state;
+		}
 	},
 
 	beforeDestroy: function () {

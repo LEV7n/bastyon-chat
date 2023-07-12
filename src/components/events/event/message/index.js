@@ -175,7 +175,9 @@ export default {
 		},
 
 		showmyicon: function () {
+			
 			return (
+				this.streamMode || 
 				this.showmyicontrue ||
 				this.content.msgtype === "m.image" ||
 				/*this.content.msgtype === 'm.audio' ||*/
@@ -239,6 +241,7 @@ export default {
 
 		imageUrl: function () {
 			if (this.content.msgtype === "m.image") {
+
 				if (this.encryptedData) {
 					return this.decryptedInfo;
 				} else {
@@ -337,10 +340,10 @@ export default {
 
 		urlpreview: function () {
 			if (
-				this.streamMode && this.content.url ||
-				!this.streamMode && !this.preview && this.content.msgtype !== "m.file"
+				(this.streamMode && this.content.url) ||
+			(!this.streamMode && !this.preview && this.content.msgtype !== "m.file" && this.content.msgtype !== "m.image" && this.content.msgtype !== "m.audio")
 			) {
-				var url = f.getUrl(this.content.url || this.body);
+				var url = f.getUrl(this.streamMode ? this.content.url : this.body);
 
 				if (url) {
 					var _u = new URL(url);
@@ -424,6 +427,9 @@ export default {
 		},
 
 		dropDownMenuShow: function (e) {
+
+			if(this.streamMode) return
+
 			if (e?.button === 2) return e.preventDefault();
 			
 			setTimeout(() => {

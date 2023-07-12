@@ -205,7 +205,7 @@ import simpleSearch from "@/components/assets/simpleSearch/index.vue";
 
 import linepreloader from "@/components/assets/linepreloader/index.vue";
 
-import chats from "@/views/chats.vue";
+
 import vuescroll from 'vue-scroll'
 ////////
 Vue.use(vuescroll)
@@ -305,7 +305,6 @@ export default {
 	name: "App",
 	components: {
 		MainWrapper,
-		chats,
 		userUnauthorized,
 	},
 
@@ -314,11 +313,13 @@ export default {
 			isChatEncrypted: this.isChatEncrypted,
 			matches: this.matches,
 			markText: this.markText,
-      streamMode: this.streamMode,
-      menuState: {
-        get: () => this.menuState,
-        set: (val) => this.$set(this, "menuState", val)
-      }
+			streamMode: this.streamMode,
+			menuState: {
+				get: () => this.menuState,
+				set: (val) => this.$set(this, "menuState", val)
+			},
+			adminActions: {},
+			powerLevel: {}
 		};
 	},
 
@@ -368,10 +369,10 @@ export default {
 			default: false,
 		},
 
-    cssrules: {
-      type: String,
-      default: []
-    }
+		cssrules: {
+			type: String,
+			default: []
+		}
 	},
 
 	data: function () {
@@ -393,7 +394,7 @@ export default {
 				clear: this.clearMatches,
 			},
 
-      menuState: false
+			menuState: false
 		};
 	},
 
@@ -413,6 +414,12 @@ export default {
 
 				// Update the teamroom messages
 				this.generateTeamroomMessages();
+
+				if (this.core && this.core.exporter){
+					this.core.exporter.changeLocalization(i18n.locale)
+				}
+
+
 			},
 		},
 
@@ -427,9 +434,9 @@ export default {
 	},
 
 	computed: {
-    streamMode: function () {
-      return this.style === 'stream';
-    },
+		streamMode: function () {
+			return this.style === 'stream';
+		},
 
 		statetheme: function () {
 			return this.$store.state.theme;
@@ -630,6 +637,10 @@ export default {
 	},
 
 	created() {
+		// this.pocketnet = false;
+		// this.mobile = !this.pocketnet;
+		// this.recording = true;
+		// this.iscallsenabled = true;
 		// this.pocketnet = false;
 		// this.mobile = !this.pocketnet;
 		// this.recording = true;
@@ -904,6 +915,10 @@ export default {
 
 		core.init();
 
+		if (core.exporter){
+			core.exporter.changeLocalization(i18n.locale)
+		}
+
 		/*
 
 		this.$dialog.confirm(
@@ -926,7 +941,7 @@ export default {
 			.initWithUser(user)
 			.then((r) => {
 				return core.mtrx.wait().then(() => {
-					core.user.getContacts();
+					if (!this.streamMode) core.user.getContacts();
 
 					setTimeout(() => {
 						if (
@@ -952,21 +967,21 @@ export default {
 				this.$store.commit("active", false);
 		}, 3000);
 
-    (() => {
-      try {
-        return JSON.parse(this.cssrules || "[]");
-      } catch {
-        return [];
-      }
-    })().forEach(rule => {
-      this.$nextTick(() => {
-        const link = document.createElement("link");
-              link.setAttribute("rel", "stylesheet");
-              link.setAttribute("href", rule);
+		(() => {
+			try {
+				return JSON.parse(this.cssrules || "[]");
+			} catch {
+				return ["https://use.fontawesome.com/releases/v5.2.0/css/all.css"];
+			}
+		})().forEach(rule => {
+			this.$nextTick(() => {
+				const link = document.createElement("link");
+							link.setAttribute("rel", "stylesheet");
+							link.setAttribute("href", rule);
 
-        this.$root.$el.append(link);
-      });
-    });
+				this.$root.$el.append(link);
+			});
+		});
 
 		window.matrixchat = core;
 	},

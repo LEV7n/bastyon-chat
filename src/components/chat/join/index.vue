@@ -6,7 +6,8 @@
 					{{ $t("caption.chatInvite") }}
 				</span>
 				<span v-if="!streamMode && creatorLeft">{{ $t("caption.cantJoin") }}</span>
-        <span v-if="streamMode">You need join to write</span>
+				<span v-if="streamMode && videoMeta?.isLive">You need join to write</span>
+				<span v-if="streamMode && !videoMeta?.isLive">This stream is over</span>
 			</div>
 		</div>
 
@@ -24,7 +25,7 @@
 		/>
 
 		<div
-			v-if="!hiddenInParent"
+			v-if="streamMode || !hiddenInParent"
 			class="joinAction fixedOnPageBottom"
 			:class="{ bin: pocketnet, bout: !pocketnet }"
 		>
@@ -43,7 +44,15 @@
 					</div>
 
 					<div class="action" v-if="!creatorLeft">
-						<button class="small button rounded" @click="join">
+						<button
+							:class="{
+								'small': true,
+								'button': true,
+								'rounded': true,
+								'disabled': !videoMeta?.isLive
+							}"
+							@click="join"
+						>
 							{{ $t("button.join") }}
 						</button>
 					</div>

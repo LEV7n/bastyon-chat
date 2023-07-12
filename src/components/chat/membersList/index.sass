@@ -5,7 +5,7 @@
 
     /deep/
         .simpleSearch
-            padding: 0 $r
+            padding: $r $r 0
 
             input[type="text"]
                 background: unset
@@ -24,6 +24,9 @@
             .roomMember
                 border-bottom: 0
                 padding: $r 0 $r $r
+
+                &:first-child
+                    padding-top: 0
 
                 .leftWrapper
                     .avatarNameWrapper
@@ -47,7 +50,8 @@
     align-items: center
     justify-content: flex-start
     margin: 0
-    padding: $r $r
+    padding: $r 2.5 * $r
+    padding-left: 1.5 * $r
     width: 100%
     text-align: center
 
@@ -61,6 +65,7 @@
         padding: 0 $r 0 0
         text-align: center
         width: 30px
+        font-size: 0.6em
 
     &.section-administrators i.icon
         color: rgb(235, 87, 87)

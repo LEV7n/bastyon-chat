@@ -16,6 +16,7 @@ export default {
 		filterType: String,
 		style : ''
 	},
+
 	components: {
 		list,
 		chatInput: () => import("@/components/chat/input/index.vue"),
@@ -24,12 +25,14 @@ export default {
 		userRoomStatus,
 	},
 	
-	inject: ['streamMode'],
-	
-	inject: ['streamMode'],
+	inject: [
+		"streamMode",
+		"userBanned"
+	],
 
 	data: function () {
 		return {
+			membership: null,
 			roomUserBanned: false,
 			roomUserKicked: false,
 			roomMuted: false,
@@ -57,12 +60,36 @@ export default {
 	created() { },
 
 	mounted() {
-		this.getuserinfo();
-		
 		if (!this.streamMode) {
+			this.getuserinfo();
+		
 			this.$store.commit("active", true);
 			this.$store.commit("blockactive", { value: true, item: "chat" });
 		}
+
+		this.membershipReactivity = setInterval(() => {
+			if (this.m_chat && !this.streamMode) {
+				if (this.m_chat.timeline.length > 0) {
+					const
+						id = this.core.mtrx.client.credentials.userId,
+						timeline = this.core.mtrx.client.getRoom(this.chat.roomId).timeline,
+						lastEvent = timeline[timeline.length - 1];
+
+					if (
+						lastEvent.event.state_key === id &&
+						lastEvent.event.content.reason === "admin ban"
+					) {
+						this.roomUserBanned = true;
+					} else {
+						this.roomUserBanned = false;
+					}
+				}
+			} else if (this.streamMode) {
+				this.roomUserBanned = this.m_chat?.currentState.members[this.m_chat.myUserId]?.membership === "ban";
+			}
+
+			this.membership = this.m_chat?.currentState.members[this.m_chat.myUserId]?.membership;
+		}, 1000);
 	},
 
 	destroyed() {
@@ -70,16 +97,12 @@ export default {
 			this.$store.commit("blockactive", { value: false, item: "chat" });
 			this.$store.commit("SET_CURRENT_ROOM", false);
 		}
-		if (!this.streamMode) {
-			this.$store.commit("blockactive", { value: false, item: "chat" });
-			this.$store.commit("SET_CURRENT_ROOM", false);
-		}
 
 		this.clearintrv();
+		clearInterval(this.membershipReactivity);
 	},
 
 	watch: {
-		
 		needcreatekey: function () {
 			if (this.needcreatekey) {
 				if (!this.intrv) {
@@ -99,6 +122,7 @@ export default {
 				});
 			}
 		},
+
 		m_chat: {
 			immediate: true,
 			handler: function () {
@@ -114,8 +138,9 @@ export default {
 							this.checkcrypto();
 						});
 				}
-			},
+			}
 		},
+
 		chat: {
 			immediate: true,
 			handler: function () {
@@ -126,16 +151,22 @@ export default {
 					this.$store.commit("SET_CURRENT_ROOM", this.chat.roomId);
 					this.$store.commit("SET_LAST_ROOM", this.chat.roomId);
 				} else this.$store.commit("SET_CURRENT_ROOM", false);
-			},
+			}
+		},
+
+		userBanned: {
+			immediate: true,
+			deep: true,
+			handler: function () {
+				this.membership = this.m_chat?.currentState.members[this.m_chat.myUserId].membership;
+			}
 		}
 	},
+
 	computed: mapState({
 		pocketnet: (state) => state.pocketnet,
 		minimized: (state) => state.minimized,
 		auth: (state) => state.auth,
-		active: function(state) {
-			return this.streamMode || state.active;
-		},
 		active: function(state) {
 			return this.streamMode || state.active;
 		},
@@ -232,8 +263,8 @@ export default {
 			return this.$i18n.t("button");
 		},
 	}),
+
 	methods: {
-		
 		clearintrv: function () {
 			if (this.intrv) {
 				clearInterval(this.intrv);
@@ -561,8 +592,8 @@ export default {
 		
 		joined: function () {
 			/*Trigger chat reactivity*/
-			this.$set(this.chat, 'joined', true);
+			this.$set(this.chat, 'joined', +new Date());
+			this.userBanned.set(false);
 		}
-		
-	},
+	}
 };

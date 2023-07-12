@@ -56,6 +56,7 @@
 						:donate="donate"
 						:storagekey="'chatinput' + chat.roomId"
 						:tipusers="tipusers"
+						:me="me"
 					/>
 					<div
 						class="left"

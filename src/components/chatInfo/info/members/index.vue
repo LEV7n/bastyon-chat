@@ -3,11 +3,11 @@
 		<div
 			class="roomMember"
 			:class="user.membership"
-			v-for="(user, index) in membersList"
+			v-for="user in membersList"
 			:key="user.userId"
 
 		>
-			<div class="leftWrapper" @click="core.mtrx.opencontact(userinfo(user))">
+			<div class="leftWrapper" @click="openModal(user)">
 				<div class="avatarNameWrapper">
 					<userpic :userinfo="userinfo(user)" :status="user.membership" />
 				</div>

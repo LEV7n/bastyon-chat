@@ -31,7 +31,7 @@ const i18n = new VueI18n({
 	silentTranslationWarn: true,
 });
 
-const chatConstructor = Vue.extend({...chat, store, i18n})
+const chatConstructor = Vue.extend({ ...chat, store, i18n })
 
 class Exporter {
 		constructor(core, p) {
@@ -76,3 +76,4 @@ class Exporter {
 }
 
 export default Exporter;
+

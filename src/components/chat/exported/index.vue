@@ -4,14 +4,13 @@
 
 <script>
 import { mapState } from "vuex";
-import Stream from "./stream.vue";
 import f from "@/application/functions";
 
 export default {
 	name: "chatExported",
 
-	components : {
-		Stream
+	components: {
+		Stream: () => import('./stream.vue')
 	},
 
 	provide() {
@@ -32,7 +31,12 @@ export default {
 			menuState: {
 				get: () => this.menuState,
 				set: (val) => this.$set(this, "menuState", val)
-			}
+			},
+
+			matches: {},
+			markText: () => {},
+			
+			userBanned: this.userBanned
 		}
 	},
 
@@ -40,7 +44,7 @@ export default {
 		return {
 			style: null,
 			videoUrl: null,
-			videoMeta: {},
+			videoMeta: null,
 			authorId: null,
 			chat: null,
 			powerLevels: {
@@ -48,20 +52,26 @@ export default {
 				moderator: 50,
 				participant: 0
 			},
-			menuState: false
+			menuState: false,
+			userBanned: {
+				value: null,
+				get: () => this.userBanned?.value,
+				set: (val) => {
+					this.$set(this.userBanned, "value", val);
+				}
+			}
 		}
 	},
 
-	mounted () {
-		/*Get video meta (&stream state)*/
-		window.POCKETNETINSTANCE?.platform?.sdk?.videos?.info(this.videoUrl)
-			.then(() => window.parseVideo(this.videoUrl))
-			.then(meta => {
-					if (meta?.type === "peertube") {
-						this.videoMeta = Object.assign(this.videoMeta, window.peertubeglobalcache[meta.id]);
-						console.log('META', this.videoMeta, this);
-					}
-			});
+	created () {
+		if (!this.videoMeta.isLive) {
+			this.leaveRoom();
+		}
+
+		this.userBanned.set((() => {
+			const id = this.m_chat.myUserId;
+			return this.chat.currentState?.members[id]?.membership === "ban";
+		})());
 	},
 
 	computed: {
@@ -69,12 +79,12 @@ export default {
 			auth: (state) => state.auth
 		}),
 
-		streamMode: function () {
+		streamMode() {
 			return this.style === "stream";
 		},
 
-		m_chat: function () {
-			return this.core.mtrx.client.getRoom(this.chat.roomId);
+		m_chat() {
+			return this.core.mtrx.client.getRoom(this.chat.roomId) || {};
 		}
 	},
 
@@ -139,6 +149,16 @@ export default {
 			}
 
 			return Promise.resolve();
+		},
+
+		leaveRoom() {
+			this.core.mtrx.client.leave(this.chat.roomId).then((r) => {
+				/* this.core.mtrx.client
+					.forget(this.chat.roomId, true)
+					.then((r) => {
+						this.$store.commit("DELETE_ROOM", this.chat.roomId);
+					}); */
+			});
 		}
 	}
 };

@@ -3,10 +3,10 @@
 		<div class="topheader">
 			<div class="row">
 				<span>
-					<template v-if="!showMembers">Stream chat</template>
-					<template v-else>Members list</template>
+					<template v-if="!showMembers">{{ $t(`caption.streamChat`) }}</template>
+					<template v-else>{{ $t(`caption.membersList`) }}</template>
 				</span>
-				<div class="buttons">
+				<div class="buttons" v-if="!userBanned?.value">
 					<button
 						class="button"
 						@click="toggleMembers"
@@ -18,7 +18,7 @@
 					</button>
 				</div>
 			</div>
-			<div class="row" v-if="!showMembers">
+			<div class="row" v-if="!showMembers && !userBanned?.value">
 				<div class="buttons chat-filter">
 					<button
 						v-for="{ name, filter } in chatFilter"
@@ -56,6 +56,8 @@ export default {
 		pmenu
 	},
 
+	inject: ["userBanned"],
+	
 	props: {
 		chat: Object,
 		style: String
@@ -72,9 +74,11 @@ export default {
 		}
 	},
 
-	computed: mapState({
-		auth: (state) => state.auth
-	}),
+	computed: {
+		...mapState({
+			auth: (state) => state.auth
+		})
+	},
 
 	methods: {
 		filterMessages(e, type) {
