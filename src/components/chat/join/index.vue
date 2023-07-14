@@ -16,12 +16,9 @@
 			<span v-if="creatorLeft">{{ $t("caption.creatorLeft") }}</span>
 		</div>
 
-		<chatPreview
-			:usersinfo="usersinfo"
-			:chat="chat"
-			:m_chat="m_chat"
-			:undefinedRoom="creatorLeft"
-			v-if="!streamMode"
+		<userspic
+			:users="users"
+			:chunks="50"
 		/>
 
 		<div
@@ -49,7 +46,7 @@
 								'small': true,
 								'button': true,
 								'rounded': true,
-								'disabled': !videoMeta?.isLive
+								'disabled': streamMode && !videoMeta?.isLive
 							}"
 							@click="join"
 						>

@@ -11,6 +11,10 @@ export default {
 			type: Object,
 			default: {},
 		},
+		chunks: {
+			type: Number,
+			default: 0
+		}
 	},
 
 	data: function () {
@@ -18,5 +22,5 @@ export default {
 	},
 	components: {
 		many,
-	},
+	}
 };

@@ -1,25 +1,33 @@
 <template>
-	<div class="aboutRoomAvatar" v-if="userinfo.length > 1">
-		<div class="small" v-if="userinfo.length < 5">
+	<div class="aboutRoomAvatar" v-if="users.length > 1">
+		<div class="small" v-if="users.length < 5">
 			<div
 				class="userinfopicwrapper"
 				:class="{
-					twoAvatars: userinfo.length === 2,
-					threeAvatars: userinfo.length === 3,
-					fourAvatars: userinfo.length === 4,
+					twoAvatars: users.length === 2,
+					threeAvatars: users.length === 3,
+					fourAvatars: users.length === 4,
 				}"
 			>
-				<div class="userwrapper" v-for="(user, i) in userinfo">
+				<div class="userwrapper" v-for="(user, i) in users">
 					<userpic :status="status[user.id]" :userinfo="user" />
 				</div>
 			</div>
 		</div>
 
 		<div class="manyavatars" v-else>
-			<div class="useravatar" v-for="(user, i) in userinfo">
+			<div class="useravatar" v-for="(user, i) in users">
 				<userpic :status="status[user.id]" :userinfo="user" />
 			</div>
-			
+
+		</div>
+
+		<div class="showmore" v-if="chunks">
+			<button
+				class="small button rounded"
+				v-if="users.length < userinfo.length"
+				@click="showMore"
+			>Show more</button>
 		</div>
 	</div>
 </template>
@@ -33,11 +41,37 @@ export default {
 			type: Object,
 			default: {},
 		},
+		chunks: {
+			type: Number,
+			default: 0
+		}
 	},
 
 	data: function () {
-		return {};
+		return {
+			chunk: 0,
+			users: []
+		};
 	},
+
+	methods: {
+		showMore() {
+			if (this.users.length >= this.userinfo.length) return;
+
+			const next = this.chunk * this.chunks;
+
+			this.users = this.users.concat(
+				this.userinfo.slice(next, next + this.chunks)
+			);
+
+			this.chunk++;
+		}
+	},
+
+	mounted() {
+		if (this.chunks) this.showMore();
+		else this.users = this.userinfo;
+	}
 };
 </script>
 <style lang="sass" scoped>
@@ -159,4 +193,10 @@ export default {
 
 .invited
 	opacity: .5
+
+.showmore
+	display: flex
+	justify-content: center
+	font-size: 2em
+	padding: $r * 2
 </style>
