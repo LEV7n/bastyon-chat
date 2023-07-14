@@ -53,4 +53,8 @@ export default {
 			return _.isEmpty(user);
 		},
 	},
+
+	mounted() {
+		console.log(this.usersinfo)
+	},
 };

@@ -11,7 +11,7 @@ export default {
 	},
 
 	components: {
-		chatPreview,
+		chatPreview
 	},
 	
 	inject: [
@@ -47,11 +47,14 @@ export default {
 				return this.core.mtrx.blockeduser(users[0].userId);
 			}
 		},
+		users: function () {
+			return this.core.mtrx.chatUsersInfo(this.chat.roomId, "anotherChatUsers");
+		}
 	}),
 	mounted: function () {},
 	methods: {
 		join: function () {
-			if (!this.videoMeta?.isLive) return;
+			if (this.streamMode && !this.videoMeta?.isLive) return;
 
 			var self = this;
 
