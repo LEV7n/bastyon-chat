@@ -127,7 +127,11 @@ export default {
 			immediate: true,
 			handler: function () {
 				if (this.m_chat && !_.isEmpty(this.m_chat)) {
-					this.core.mtrx.kit
+					this.core.mtrx.kit.prepareChat(this.m_chat).then(() => {
+						this.ready = true;
+						this.checkcrypto();
+					});
+					/* this.core.mtrx.kit
 						.allchatmembers([this.m_chat], false, true)
 						.then((r) => {
 							return this.core.mtrx.kit.prepareChat(this.m_chat);
@@ -136,7 +140,7 @@ export default {
 							this.ready = true;
 
 							this.checkcrypto();
-						});
+						}); */
 				}
 			}
 		},
@@ -158,7 +162,7 @@ export default {
 			immediate: true,
 			deep: true,
 			handler: function () {
-				this.membership = this.m_chat?.currentState.members[this.m_chat.myUserId].membership;
+				this.membership = this.m_chat?.currentState.members[this.m_chat.myUserId]?.membership;
 			}
 		}
 	},
