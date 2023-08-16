@@ -321,12 +321,12 @@ export default {
 			function normalizeWheelDelta(e) {
 				if (e.detail) {
 					if (e.wheelDelta) {
-						return e.wheelDelta/e.detail/40 * (e.detail>0 ? 1 : -1) // Opera
+						return (e.wheelDelta / e.detail) / (40 * (e.detail > 0 ? 1 : -1)) // Opera
 					} else {
-						return -e.detail/3 // Firefox
+						return -e.detail / 3 // Firefox
 					}
 				} else if (e.wheelDelta) {
-					return e.wheelDelta/120 // IE,Safari,Chrome
+					return e.wheelDelta / 120 // IE,Safari,Chrome
 				} else {
 					return e;
 				}
@@ -339,11 +339,13 @@ export default {
 				
 				target.scrollTop += delta
 				
-				if (Math.abs(delta) > 0.5) {
+				if (delta <= 0) {
 					requestFrame(update)
 				} else {
 					moving = false
 				}
+
+				console.log(moving, Math.abs(delta), pos)
 			}
 		
 			let requestFrame = function() { // requestAnimationFrame cross browser
